@@ -2,6 +2,12 @@
 
 Memory operation functions for the ARM7TDMI.
 
+They'll also *work* with any other ARM arch ARMv4T or later, but instruction ordering
+is intended for the 3-stage pipeline of the ARM7TDMI.
+On later ARM chips (with a longer pipeline) the loops will still be correct,
+but they'll be slower than the best possible speeds from code optimized for the
+longer pipelines.
+
 For a step by step explanation of the assembly,
 check out the [HackMD Article](https://hackmd.io/@Lokathor/HJXTfarj5).
 
@@ -9,10 +15,10 @@ check out the [HackMD Article](https://hackmd.io/@Lokathor/HJXTfarj5).
 
 Unfortunately, crates can't specify what link section they want a *dependency's* code to use.
 Since my main use for this assembly is to have it in a special section on the GBA,
-I can't just publish it to crates.io and then use it as a dependency.
-Or, I could declare stuff with the `link_section` attributes I want,
+I can't just publish it to crates.io and then use it as a dependency and have it go where I want.
+Or, I could declare the stuff with the special sections I want,
 but then *no one else* would be able to use the crate.
-So, right now, the crate is just not published on crates.io at all.
+So, right now, this is just not published on crates.io at all.
 
 If you want to use the code, just copy the assembly files directly into your own project
 and use them that way. Hopefully this situation can be improved somehow. (eventually?)
