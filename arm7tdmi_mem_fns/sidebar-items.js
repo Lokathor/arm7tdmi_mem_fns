@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["copy_u8_forward","copies from low to high address."],["copy_u8_overlapping","copies the memory, automatically determines the correct copy direction."],["copy_u8_reverse","copies from high to low address"]]};
