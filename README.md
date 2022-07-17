@@ -3,7 +3,7 @@
 Memory operation functions for the ARM7TDMI.
 
 For a step by step explanation of the assembly,
-check out the [HackMD](https://hackmd.io/@Lokathor/HJXTfarj5).
+check out the [HackMD Article](https://hackmd.io/@Lokathor/HJXTfarj5).
 
 ## Use
 
