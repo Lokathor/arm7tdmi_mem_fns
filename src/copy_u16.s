@@ -30,6 +30,6 @@ copy_u16_reverse:
     bxeq    lr
   2:
     sub     r2, r2, #1
-    ldrb    r3, [r1]
-    strb    r3, [r0]
+    ldrb    r3, [r1, r2]
+    strb    r3, [r0, r2]
     b       1b
