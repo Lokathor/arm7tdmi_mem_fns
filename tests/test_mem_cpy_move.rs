@@ -20,3 +20,25 @@ impl BadLcg {
     self.0
   }
 }
+
+fn do_check(mut b: Vec<u8>, d: usize, s: usize, count: usize) {
+  let mut clone = b.clone();
+  clone.copy_within(s..(s+count), d);
+  unsafe {
+    let p = b.as_mut_ptr();
+    zmemmove(p.add(d), p.add(s), count);
+  }
+  assert_eq!(clone, b, "failure: d:{d}, s:{s}, count:{count}");
+}
+
+#[test]
+fn test_zmemcpy() {
+  let mut lcg = BadLcg(rand_u32());
+  
+  for count in 0..138 {
+    let b = rand_bytes(1024);
+    let d = lcg.next_u32() % 512;
+    let s = lcg.next_u32() % 512;
+    do_check(b, d, s, count);
+  }
+}
