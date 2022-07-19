@@ -28,7 +28,7 @@ zmemmove:
 z__aeabi_memmove4:
 z__aeabi_memmove8:
     cmp    r0, r1
-    bgt    z__aeabi_memcpy4_reverse
+    bgt    .L_aeabi_memcpy_reverse
     b      z__aeabi_memcpy4
 
 @ Note: unaligned aeabi memmove is in the forward copy code area for fallthrough
