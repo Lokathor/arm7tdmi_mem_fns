@@ -12,3 +12,10 @@ fn rand_u32() -> u32 {
   getrandom::getrandom(&mut bytes).unwrap();
   u32::from_ne_bytes(bytes)
 }
+
+struct BadLCG(u32);
+impl BadLcg {
+  fn next_u32(&mut self) -> u32 {
+    self.0 = self.0.wrapping_mul(5).wrapping_add(1);
+  }
+}
