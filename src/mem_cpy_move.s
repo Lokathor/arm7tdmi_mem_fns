@@ -92,6 +92,7 @@ z__aeabi_memcpy4:
     bgt     1b
     pop     {r4-r9}
     bxeq    lr @ early return
+    adds    r2, r2, #32
     b       .L_block_forward_after
   .L_align4_forward_fixup:
     lsls    r12, r0, #31
