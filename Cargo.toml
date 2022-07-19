@@ -13,3 +13,5 @@ license = "CCO OR Apache-2.0 OR MIT"
 
 [dev-dependencies]
 getrandom = "0.2"
+bytemuck = "1"
+
