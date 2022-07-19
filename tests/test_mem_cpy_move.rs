@@ -6,3 +6,9 @@ fn rand_bytes(n: usize) -> Vec<u8> {
   getrandom::getrandom(&mut v).unwrap();
   v
 }
+
+fn rand_u32() -> u32 {
+  let mut bytes = [0; 4];
+  getrandom::getrandom(&mut bytes).unwrap();
+  u32::from_ne_bytes(bytes)
+}
