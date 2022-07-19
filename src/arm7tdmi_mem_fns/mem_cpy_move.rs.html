@@ -21,21 +21,45 @@
 <span id="15">15</span>
 <span id="16">16</span>
 <span id="17">17</span>
+<span id="18">18</span>
+<span id="19">19</span>
+<span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
 </pre><pre class="rust"><code>
 <span class="macro">core::arch::global_asm!</span>(<span class="macro">include_str!</span>(<span class="string">&quot;mem_cpy_move.s&quot;</span>), <span class="ident">options</span>(<span class="ident">raw</span>));
 
 <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> {
+  <span class="doccomment">/// exclusive regions. returns the dest pointer.</span>
   <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">zmemcpy</span>(<span class="ident">d</span>:<span class="kw-2">*mut</span> <span class="ident">u8</span>, <span class="ident">s</span>:<span class="kw-2">*const</span> <span class="ident">u8</span>, <span class="ident">count</span>: <span class="ident">usize</span>)-&gt;<span class="kw-2">*mut</span> <span class="ident">u8</span>;
+  <span class="doccomment">/// exclusive regions.</span>
   <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">z__aeabi_memcpy</span>(<span class="ident">d</span>:<span class="kw-2">*mut</span> <span class="ident">u8</span>, <span class="ident">s</span>:<span class="kw-2">*const</span> <span class="ident">u8</span>, <span class="ident">count</span>: <span class="ident">usize</span>);
+  <span class="doccomment">/// exclusive regions. pointers must both be aligned to 4.</span>
   <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">z__aeabi_memcpy4</span>(<span class="ident">d</span>:<span class="kw-2">*mut</span> <span class="ident">u8</span>, <span class="ident">s</span>:<span class="kw-2">*const</span> <span class="ident">u8</span>, <span class="ident">count</span>: <span class="ident">usize</span>);
+  <span class="doccomment">/// exclusive regions. pointers must both be aligned to 8.</span>
   <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">z__aeabi_memcpy8</span>(<span class="ident">d</span>:<span class="kw-2">*mut</span> <span class="ident">u8</span>, <span class="ident">s</span>:<span class="kw-2">*const</span> <span class="ident">u8</span>, <span class="ident">count</span>: <span class="ident">usize</span>);
 
+  <span class="doccomment">/// exclusive regions, pointers must align to 2.</span>
+  <span class="doccomment">/// * if count is even then only halfword accesses will be used.</span>
   <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">z__aeabi_memcpy_vram</span>(<span class="ident">d</span>:<span class="kw-2">*mut</span> <span class="ident">u8</span>, <span class="ident">s</span>:<span class="kw-2">*const</span> <span class="ident">u8</span>, <span class="ident">count</span>: <span class="ident">usize</span>);
+  <span class="doccomment">/// exclusive regions.</span>
+  <span class="doccomment">/// * only byte accesses will be used.</span>
   <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">z__aeabi_memcpy_sram</span>(<span class="ident">d</span>:<span class="kw-2">*mut</span> <span class="ident">u8</span>, <span class="ident">s</span>:<span class="kw-2">*const</span> <span class="ident">u8</span>, <span class="ident">count</span>: <span class="ident">usize</span>);
 
+  <span class="doccomment">/// overlapping regions. returns the dest pointer.</span>
   <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">zmemmove</span>(<span class="ident">d</span>:<span class="kw-2">*mut</span> <span class="ident">u8</span>, <span class="ident">s</span>:<span class="kw-2">*const</span> <span class="ident">u8</span>, <span class="ident">count</span>: <span class="ident">usize</span>)-&gt;<span class="kw-2">*mut</span> <span class="ident">u8</span>;
+  <span class="doccomment">/// overlapping regions.</span>
   <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">z__aeabi_memmove</span>(<span class="ident">d</span>:<span class="kw-2">*mut</span> <span class="ident">u8</span>, <span class="ident">s</span>:<span class="kw-2">*const</span> <span class="ident">u8</span>, <span class="ident">count</span>: <span class="ident">usize</span>);
+  <span class="doccomment">/// overlapping regions. pointers must both be aligned to 4.</span>
   <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">z__aeabi_memmove4</span>(<span class="ident">d</span>:<span class="kw-2">*mut</span> <span class="ident">u8</span>, <span class="ident">s</span>:<span class="kw-2">*const</span> <span class="ident">u8</span>, <span class="ident">count</span>: <span class="ident">usize</span>);
+  <span class="doccomment">/// overlapping regions. pointers must both be aligned to 8.</span>
   <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">z__aeabi_memmove8</span>(<span class="ident">d</span>:<span class="kw-2">*mut</span> <span class="ident">u8</span>, <span class="ident">s</span>:<span class="kw-2">*const</span> <span class="ident">u8</span>, <span class="ident">count</span>: <span class="ident">usize</span>);
 }
 </code></pre></div>
