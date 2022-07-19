@@ -45,7 +45,7 @@ zmemcpy:
 
 z__aeabi_memmove:
     cmp     r0, r1
-    bgt     z__aeabi_memcpy_reverse
+    bgt     .L_aeabi_memcpy_reverse
     @ fallthrough
 z__aeabi_memcpy:
     eor     r12, r0, r1
