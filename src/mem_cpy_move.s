@@ -75,7 +75,7 @@ z__aeabi_memcpy4:
     ldmcs   r1!, {r3, r12}
     stmcs   r0!, {r3, r12}
     ldrmi   r3, [r1], #4
-    strmi   r3, {r0], #4
+    strmi   r3, [r0], #4
     @ carry/sign for halfword and/or byte copy
     lsls    r3, r2, #31
     ldrhcs  r3, [r1], #2
