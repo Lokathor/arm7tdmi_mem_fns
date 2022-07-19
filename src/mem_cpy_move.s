@@ -28,7 +28,7 @@ zmemmove:
 z__aeabi_memmove4:
 z__aeabi_memmove8:
     cmp    r0, r1
-    bgt    z__aeabi_memcpy4_reverse
+    bgt    .L_aeabi_memcpy_reverse
     b      z__aeabi_memcpy4
 
 @ Note: unaligned aeabi memmove is in the forward copy code area for fallthrough
@@ -45,7 +45,7 @@ zmemcpy:
 
 z__aeabi_memmove:
     cmp     r0, r1
-    bgt     z__aeabi_memcpy_reverse
+    bgt     .L_aeabi_memcpy_reverse
     @ fallthrough
 z__aeabi_memcpy:
     eor     r12, r0, r1
@@ -75,7 +75,7 @@ z__aeabi_memcpy4:
     ldmcs   r1!, {r3, r12}
     stmcs   r0!, {r3, r12}
     ldrmi   r3, [r1], #4
-    strmi   r3, {r0], #4
+    strmi   r3, [r0], #4
     @ carry/sign for halfword and/or byte copy
     lsls    r3, r2, #31
     ldrhcs  r3, [r1], #2
@@ -150,7 +150,7 @@ z__aeabi_memcpy_sram:
     add     r1, r1, r2
     add     r0, r0, r2
     tst     r2, #32
-    bge     .L_block_copy_sub
+    bge     .L_align4r_block_copy_sub
   .L_align4r_done_with_block_copy:
     tst     r2, #(1<<4)
     ldmdbne r1!, {r3, r12}
@@ -173,7 +173,7 @@ z__aeabi_memcpy_sram:
     pop     {r4-r9}
     bxeq    lr
     adds    r2, r2, #32
-    b       .L_done_with_block_copy
+    b       .L_align4r_done_with_block_copy
   .L_align4r_handle_byte_and_halfword:
     lsls    r3, r2, #31
     submi   r2, r2, #1

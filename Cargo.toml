@@ -1,12 +1,15 @@
 [package]
 name = "arm7tdmi_mem_fns"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 keywords = ["arm7tdmi", "armv4t", "thumbv4t"]
 categories = ["embedded", "no-std"]
 publish = false
 
-# main license is CCO, the other two are provided for comaptibility with other Rust code.
+# main license is CCO, the other two are provided for maximum comaptibility with other Rust code.
 license = "CCO OR Apache-2.0 OR MIT"
 
 [dependencies]
+
+[dev-dependencies]
+getrandom = "0.2"
