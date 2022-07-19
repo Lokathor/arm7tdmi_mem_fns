@@ -106,7 +106,7 @@ z__aeabi_memcpy4:
     ldrhcs  r3, [r0], #2
     b       z__aeabi_memcpy4
 
-.L_align2_forward_fixup:
+  .L_align2_forward_fixup:
     tst     r0, #1
     ldrbne  r3, [r1], #1
     ldrbne  r3, [r0], #1
@@ -132,7 +132,7 @@ z__aeabi_memcpy_sram:
 @ COPY REVERSE
 @
 
-.L_aeabi_memcpy_reverse:
+  .L_aeabi_memcpy_reverse:
     eor    r12, r0, r1
     lsls   r12, r12, #31
     @ max align 1
@@ -144,7 +144,7 @@ z__aeabi_memcpy_sram:
     tst    r0, #3
     bne    .L_memcpy_sram_reverse
     @ fallthrough
-.L__aeabi_memcpy4_reverse:
+  .L__aeabi_memcpy4_reverse:
     tst     r2, #3
     bne     .L_align4r_handle_byte_and_halfword
   .L_align4r_count_is_now_a_multiple_of_four:
@@ -185,11 +185,11 @@ z__aeabi_memcpy_sram:
     strhcs  r3, [r0, r2]
     b       .L_align4r_count_is_now_a_multiple_of_four
 
-.L_align2_reverse_fixup:
+  .L_align2_reverse_fixup:
     /* If we have to reverse copy and we're unaligned, rip */
     tst    r0, #1
     bne    .L_memcpy_sram_reverse
-.L_memcpy_vram_reverse:
+  .L_memcpy_vram_reverse:
     tst    r2, #1
     bne    2f @ handle tail byte, if any
   1:
@@ -204,7 +204,7 @@ z__aeabi_memcpy_sram:
     strb   r2, [r0, r2]
     b      1b
 
-.L_memcpy_sram_reverse:
+  .L_memcpy_sram_reverse:
     subs   r2, r2, #1
     ldrbcs r3, [r1, r2]
     strbcs r3, [r0, r2]
