@@ -37,8 +37,8 @@ fn test_zmemcpy() {
   
   for count in 0..138 {
     let b = rand_bytes(1024);
-    let d = lcg.next_u32() % 512;
-    let s = lcg.next_u32() % 512;
+    let d = (lcg.next_u32() % 512) as usize;
+    let s = (lcg.next_u32() % 512) as usize;
     do_check(b, d, s, count);
   }
 }
