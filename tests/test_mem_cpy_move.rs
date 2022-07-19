@@ -14,7 +14,7 @@ fn rand_u32() -> u32 {
 }
 
 struct BadLCG(u32);
-impl BadLcg {
+impl BadLCG {
   fn next_u32(&mut self) -> u32 {
     self.0 = self.0.wrapping_mul(5).wrapping_add(1);
     self.0
@@ -33,7 +33,7 @@ fn do_check(mut b: Vec<u8>, d: usize, s: usize, count: usize) {
 
 #[test]
 fn test_zmemcpy() {
-  let mut lcg = BadLcg(rand_u32());
+  let mut lcg = BadLCG(rand_u32());
   
   for count in 0..138 {
     let b = rand_bytes(1024);
