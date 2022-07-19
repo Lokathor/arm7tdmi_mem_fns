@@ -17,5 +17,6 @@ struct BadLCG(u32);
 impl BadLcg {
   fn next_u32(&mut self) -> u32 {
     self.0 = self.0.wrapping_mul(5).wrapping_add(1);
+    self.0
   }
 }
