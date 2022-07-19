@@ -31,10 +31,10 @@ z__aeabi_memmove8:
     bgt    z__aeabi_memcpy4_reverse
     b      z__aeabi_memcpy4
 
-@ Note: unaligned aeabi memmove is in the forward copy code
+@ Note: unaligned aeabi memmove is in the forward copy code area for fallthrough
 
 @
-@ FORWARD COPY
+@ COPY FORWARD
 @
 
 zmemcpy:
