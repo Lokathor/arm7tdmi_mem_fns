@@ -114,15 +114,15 @@ aeabi_memcpy4:
     @ copy 4 words
     tst    r2, #0b10000
     ldmdbne r1!, {r3, r12}
-    ldmdbne r0!, {r3, r12}
+    stmdbne r0!, {r3, r12}
     ldmdbne r1!, {r3, r12}
-    ldmdbne r0!, {r3, r12}
+    stmdbne r0!, {r3, r12}
     bics   r2, r2, #0b10000
     bxeq   lr
     @ copy 2 and/or 1 words
     lsls   r3, r2, #29
     ldmdbcs r1!, {r3, r12}
-    ldmdbcs r0!, {r3, r12}
+    stmdbcs r0!, {r3, r12}
     ldrmi  r3, [r1, #-4]!
     strmi  r3, [r0, #-4]!
     bx     lr
