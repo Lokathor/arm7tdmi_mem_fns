@@ -93,14 +93,28 @@ aeabi_memcpy4:
     b      .L_f_copy_u32
   .L_r_copy_u32:
     tst    r2, #3
-    bne    2f
-  1:
+    bne    .L_r_copy_u32_byte_and_halfword_copy
+  .L_r_copy_u32_post_byte_and_halfword_copy:
+    cmp    r2, #32
+    bge    .L_r_copy_u32_block_work
+  .L_r_copy_u32_lt32_bytes:
     subs   r2, r2, #4
     ldrcs  r3, [r1, r2]
     strcs  r3, [r0, r2]
-    bgt    1b
+    bgt    .L_r_copy_u32_lt32_bytes
     bx     lr
-  2:
+  .L_r_copy_u32_block_work:
+    push   {r4-r9}
+  1:
+    subs   r2, r2, #32
+    ldmdbcs r1!, {r3-r9, r12}
+    stmdbcs r0!, {r3-r9, r12}
+    bgt    1b
+    pop    {r4-r9}
+    bxeq   lr
+    add    r2, r2, #32
+    b      .L_r_copy_u32_lt32_bytes
+  .L_r_copy_u32_byte_and_halfword_copy:
     lsls   r3, r2, #31
     submi  r2, r2, #1
     ldrbmi r3, [r1, r2]
@@ -108,5 +122,4 @@ aeabi_memcpy4:
     subcs  r2, r2, #2
     ldrhcs r3, [r1, r2]
     strhcs r3, [r0, r2]
-    b      1b
-
+    b      .L_r_copy_u32_post_byte_and_halfword_copy
