@@ -111,10 +111,20 @@ aeabi_memcpy4:
     cmp    r2, #32
     bge    .L_r_copy_u32_block_work
   .L_r_copy_u32_lt32_bytes:
-    subs   r2, r2, #4
-    ldrcs  r3, [r1, #-4]!
-    strcs  r3, [r0, #-4]!
-    bgt    .L_r_copy_u32_lt32_bytes
+    @ copy 4 words
+    tst    r2, #0b10000
+    ldmdbne r1!, {r3, r12}
+    ldmdbne r0!, {r3, r12}
+    ldmdbne r1!, {r3, r12}
+    ldmdbne r0!, {r3, r12}
+    bics   r2, r2, #0b10000
+    bxeq   lr
+    @ copy 2 and/or 1 words
+    lsls   r3, r2, #29
+    ldmdbcs r1!, {r3, r12}
+    ldmdbcs r0!, {r3, r12}
+    ldrmi  r3, [r1, #-4]!
+    strmi  r3, [r0, #-4]!
     bx     lr
   .L_r_copy_u32_block_work:
     push   {r4-r9}
