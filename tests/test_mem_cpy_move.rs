@@ -112,7 +112,7 @@ fn test_aeabi_memmove2() {
 #[test]
 fn test_aeabi_memmove4() {
   {
-    let mut buffer = rand_words(9);
+    let mut buffer = rand_words(10);
     let mut clone = buffer.clone();
     let d = 1;
     let s = 0;
