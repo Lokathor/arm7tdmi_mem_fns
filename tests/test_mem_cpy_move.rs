@@ -111,6 +111,19 @@ fn test_aeabi_memmove2() {
 
 #[test]
 fn test_aeabi_memmove4() {
+  {
+    let mut buffer = rand_words(10);
+    let mut clone = buffer.clone();
+    let d = 1;
+    let s = 0;
+    let bytes = 32;
+    unsafe {
+      let p: *mut u32 = buffer.as_mut_ptr();
+      aeabi_memmove4(p.add(d), p.add(s), bytes);
+    }
+    bytemuck::cast_slice_mut::<u32, u8>(&mut clone).copy_within((s*4)..(s*4+bytes),d*4);
+    assert_eq!(clone, buffer, "\nd: {d},\ns: {s},\nbytes: {bytes}");
+  }
   let mut lcg = Lcg::new();
   for _ in 0 .. 10 {
     for bytes in 0 .. 128 {
