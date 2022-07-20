@@ -95,12 +95,14 @@ aeabi_memcpy4:
     tst    r2, #3
     bne    .L_r_copy_u32_byte_and_halfword_copy
   .L_r_copy_u32_post_byte_and_halfword_copy:
+    add    r0, r0, r2
+    add    r1, r1, r2
     cmp    r2, #32
     bge    .L_r_copy_u32_block_work
   .L_r_copy_u32_lt32_bytes:
     subs   r2, r2, #4
-    ldrcs  r3, [r1, r2]
-    strcs  r3, [r0, r2]
+    ldrcs  r3, [r1, #-4]!
+    strcs  r3, [r0, #-4]!
     bgt    .L_r_copy_u32_lt32_bytes
     bx     lr
   .L_r_copy_u32_block_work:
