@@ -66,6 +66,8 @@ aeabi_memmove4:
     bgt    .L_r_copy_u32
 aeabi_memcpy8:
 aeabi_memcpy4:
+    cmp    r2, #32
+    bge    .L_f_copy_u32_block_work
   .L_f_copy_u32:
     subs   r2, r2, #4
     ldrcs  r3, [r1], #4
@@ -78,6 +80,17 @@ aeabi_memcpy4:
     ldrbmi r3, [r1], #1
     strbmi r3, [r0], #1
     bx     lr
+  .L_f_copy_u32_block_work:
+    push   {r4-r9}
+  1:
+    subs   r2, r2, #32
+    ldmcs  r1!, {r3-r9, r12}
+    stmcs  r0!, {r3-r9, r12}
+    bgt    1b
+    pop    {r4-r9}
+    bxeq   lr
+    add    r2, r2, #32
+    b      .L_f_copy_u32
   .L_r_copy_u32:
     tst    r2, #3
     bne    2f
