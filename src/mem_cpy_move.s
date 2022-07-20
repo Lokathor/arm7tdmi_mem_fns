@@ -69,11 +69,23 @@ aeabi_memcpy4:
     cmp    r2, #32
     bge    .L_f_copy_u32_block_work
   .L_f_copy_u32:
-    subs   r2, r2, #4
-    ldrcs  r3, [r1], #4
-    strcs  r3, [r0], #4
-    bgt    .L_f_copy_u32
+    @ copy 4 words
+    tst    r2, #0b10000
+    ldmne  r1!, {r3, r12}
+    stmne  r0!, {r3, r12}
+    ldmne  r1!, {r3, r12}
+    stmne  r0!, {r3, r12}
+    bics   r2, r2, #0b10000
     bxeq   lr
+    @ copy 2 and/or 1 words
+    lsls   r3, r2, #29
+    ldmcs  r1!, {r3, r12}
+    stmcs  r0!, {r3, r12}
+    ldrmi  r3, [r1], #4
+    strmi  r3, [r0], #4
+    bics   r2, r2, #0b1100
+    bxeq   lr
+    @ copy halfword and/or byte
     lsls   r3, r2, #31
     ldrhcs r3, [r1], #2
     strhcs r3, [r0], #2
@@ -89,7 +101,6 @@ aeabi_memcpy4:
     bgt    1b
     pop    {r4-r9}
     bxeq   lr
-    add    r2, r2, #32
     b      .L_f_copy_u32
   .L_r_copy_u32:
     tst    r2, #3
