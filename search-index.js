@@ -1,5 +1,5 @@
 var searchIndex = JSON.parse('{\
-"arm7tdmi_mem_fns":{"doc":"","t":[5,5,5,5,5,5,5,5,5,5],"n":["z__aeabi_memcpy","z__aeabi_memcpy4","z__aeabi_memcpy8","z__aeabi_memcpy_sram","z__aeabi_memcpy_vram","z__aeabi_memmove","z__aeabi_memmove4","z__aeabi_memmove8","zmemcpy","zmemmove"],"q":["arm7tdmi_mem_fns","","","","","","","","",""],"d":["exclusive regions.","exclusive regions. pointers must both be aligned to 4.","exclusive regions. pointers must both be aligned to 8.","exclusive regions.","exclusive regions, pointers must align to 2.","overlapping regions.","overlapping regions. pointers must both be aligned to 4.","overlapping regions. pointers must both be aligned to 8.","exclusive regions. returns the dest pointer.","overlapping regions. returns the dest pointer."],"i":[0,0,0,0,0,0,0,0,0,0],"f":[0,0,0,0,0,0,0,0,0,0],"p":[]}\
+"arm7tdmi_mem_fns":{"doc":"","t":[],"n":[],"q":[],"d":[],"i":[],"f":[],"p":[]}\
 }');
 if (typeof window !== 'undefined' && window.initSearch) {window.initSearch(searchIndex)};
 if (typeof exports !== 'undefined') {exports.searchIndex = searchIndex};
