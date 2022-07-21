@@ -28,7 +28,7 @@ aeabi_memcpy1:
   .L_r_copy_u8:
     add     r0, r0, r2
     add     r1, r1, r2
-  .L_r_copy_u8_post_add:
+  .L_r_copy_u8_add_complete:
   1:
     subs    r2, r2, #1
     ldrbcs  r3, [r1, #-1]!
