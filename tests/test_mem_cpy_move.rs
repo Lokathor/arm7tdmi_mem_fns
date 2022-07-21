@@ -65,7 +65,7 @@ impl Lcg {
   }
 }
 
-#[test]
+//#[test]
 fn test_aeabi_memmove1(){
   let mut lcg = Lcg::new();
   for _ in 0..10 {
@@ -84,7 +84,7 @@ fn test_aeabi_memmove1(){
   }
 }
 
-#[test]
+//#[test]
 fn test_aeabi_memmove2() {
   let mut lcg = Lcg::new();
   for _ in 0 .. 10 {
@@ -103,7 +103,7 @@ fn test_aeabi_memmove2() {
   }
 }
 
-#[test]
+//#[test]
 fn test_aeabi_memmove4() {
   {
     let mut buffer = rand_words(10);
@@ -146,7 +146,8 @@ fn test_libc_memmove() {
       let s = (lcg.next_u32() % 128) as usize;
       unsafe {
         let p: *mut u8 = buffer.as_mut_ptr();
-        libc_memmove(p.add(d), p.add(s), bytes);
+        let out = libc_memmove(p.add(d), p.add(s), bytes);
+        assert_eq!(p.add(d), out);
       }
       clone.copy_within(s..(s+bytes),d);
       assert_eq!(clone, buffer, "\nd: {d},\ns: {s},\nbytes: {bytes}");
