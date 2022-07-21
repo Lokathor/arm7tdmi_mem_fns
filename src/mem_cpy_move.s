@@ -19,14 +19,16 @@ aeabi_memmove1:
     bgt    .L_r_copy_u8
 aeabi_memcpy1:
   .L_f_copy_u8:
+  1:
     subs    r2, r2, #1
     ldrbcs  r3, [r1], #1
     strbcs  r3, [r0], #1
-    bgt     .L_f_copy_u8
+    bgt     1b
     bx      lr
   .L_r_copy_u8:
     add     r0, r0, r2
     add     r1, r1, r2
+  .L_r_copy_u8_post_add:
   1:
     subs    r2, r2, #1
     ldrbcs  r3, [r1, #-1]!
