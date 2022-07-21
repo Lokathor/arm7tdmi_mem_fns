@@ -25,10 +25,13 @@ aeabi_memcpy1:
     bgt     .L_f_copy_u8
     bx      lr
   .L_r_copy_u8:
+    add     r0, r0, r2
+    add     r1, r1, r2
+  1:
     subs    r2, r2, #1
-    ldrbcs  r3, [r1, r2]
-    strbcs  r3, [r0, r2]
-    bgt     .L_r_copy_u8
+    ldrbcs  r3, [r1, #-1]!
+    strbcs  r3, [r0, #-1]!
+    bgt     1b
     bx      lr
 
 @ the pointers are co-aligned to 2
