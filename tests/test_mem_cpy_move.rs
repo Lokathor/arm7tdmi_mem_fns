@@ -3,21 +3,10 @@
 core::arch::global_asm!(include_str!("../src/mem_cpy_move.s"), options(raw));
 
 extern "C" {
-  /// Copies `d` to `s`.
-  /// * The two regions **must not** overlap.
-  /// * The maximum co-alignment is assumed to be 1.
-  fn aeabi_memcpy1(d: *mut u8, s: *const u8, bytes: usize);
-
   /// Copies to `d` from `s`.
   /// * The two regions *may* overlap.
   /// * The maximum co-alignment is assumed to be 1.
   fn aeabi_memmove1(d: *mut u8, s: *const u8, bytes: usize);
-
-  /// Copies to `d` from `s`.
-  /// * The two regions **must not** overlap.
-  /// * The two pointers **must** be aligned to 2.
-  /// * The maximum co-alignment is assumed to be 2.
-  fn aeabi_memcpy2(d: *mut u16, s: *const u16, bytes: usize);
 
   /// Copies to `d` from `s`.
   /// * The two regions *may* overlap.
@@ -26,14 +15,19 @@ extern "C" {
   fn aeabi_memmove2(d: *mut u16, s: *const u16, bytes: usize);
 
   /// Copies to `d` from `s`.
-  /// * The two regions **must not** overlap.
-  /// * The two pointers **must** be aligned to 4.
-  fn aeabi_memcpy4(d: *mut u32, s: *const u32, bytes: usize);
-
-  /// Copies to `d` from `s`.
   /// * The two regions *may* overlap.
   /// * The two pointers **must** be aligned to 4.
   fn aeabi_memmove4(d: *mut u32, s: *const u32, bytes: usize);
+
+  /// Copies to `d` from `s`.
+  /// * The two regions *may* overlap.
+  /// * The pointers can be of any alignment.
+  ///   This function will check the alignment of both pointers,
+  ///   apply a fixup if possible,
+  ///   and then call over to `aeabi_memmoveN` for however much
+  ///   alignment is available.
+  /// **Returns:** the `d` pointer you passed as input.
+  fn libc_memmove(d: *mut u8, s: *const u8, bytes: usize) -> *mut u8;
 }
 
 fn rand_bytes(n: usize) -> Vec<u8> {
@@ -136,6 +130,25 @@ fn test_aeabi_memmove4() {
         aeabi_memmove4(p.add(d), p.add(s), bytes);
       }
       bytemuck::cast_slice_mut::<u32, u8>(&mut clone).copy_within((s*4)..(s*4+bytes),d*4);
+      assert_eq!(clone, buffer, "\nd: {d},\ns: {s},\nbytes: {bytes}");
+    }
+  }
+}
+
+#[test]
+fn test_libc_memmove() {
+  let mut lcg = Lcg::new();
+  for _ in 0 .. 1000 {
+    for bytes in 0 .. 128 {
+      let mut buffer = rand_bytes(256);
+      let mut clone = buffer.clone();
+      let d = (lcg.next_u32() % 128) as usize;
+      let s = (lcg.next_u32() % 128) as usize;
+      unsafe {
+        let p: *mut u8 = buffer.as_mut_ptr();
+        libc_memmove(p.add(d), p.add(s), bytes);
+      }
+      clone.copy_within(s..(s+bytes),d);
       assert_eq!(clone, buffer, "\nd: {d},\ns: {s},\nbytes: {bytes}");
     }
   }
