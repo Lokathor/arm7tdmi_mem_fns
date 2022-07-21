@@ -50,9 +50,11 @@ aeabi_memcpy2:
     ldrbne  r3, [r1]
     strbne  r3, [r0]
     bx      lr
+
   .L_r_copy_u16:
     add     r0, r0, r2
     add     r1, r1, r2
+  .L_r_copy_u16_post_add:
     tst     r0, #1
     bne     2f
   1:
@@ -60,6 +62,10 @@ aeabi_memcpy2:
     ldrhcs  r3, [r1, #-2]!
     strhcs  r3, [r0, #-2]!
     bgt     1b
+    bxeq    lr
+    tst     r2, #1
+    ldrbne  r3, [r1, #-1]!
+    strbne  r3, [r0, #-1]!
     bx      lr
   2:
     sub     r2, r2, #1 @ count is odd to get here, so this won't go below 0
