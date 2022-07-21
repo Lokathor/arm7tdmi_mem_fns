@@ -8,7 +8,7 @@ libc_memmove:
 
 aeabi_memmove:
     cmp    r0, r1 @ if d < s, reverse copy
-    b      .L_r_copy
+    bgt    .L_r_copy
   .L_f_copy:
   1:
     subs   r2, r2, #1
