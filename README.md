@@ -2,7 +2,7 @@
 
 Implements runtime support functions according to ARM's [AEABI][aeabi].
 All functions are specialized to the ARM7TDMI CPU.
-They should work with any later CPU as well,
+They should work with any later ARM CPU as well,
 but because of instruciton pipeline differences they might have less than optimal performance.
 
 [aeabi]: https://github.com/ARM-software/abi-aa/blob/main/rtabi32/rtabi32.rst
