@@ -137,8 +137,30 @@ fn test_aeabi_memmove4() {
 
 #[test]
 fn test_libc_memmove() {
+  for d in 0..8 {
+    for s in 0..8 {
+      if d == s {
+        continue;
+      }
+      for bytes in 0..100 {
+        let mut buffer = rand_bytes(128);
+        let mut clone = buffer.clone();
+        unsafe {
+          let p: *mut u8 = buffer.as_mut_ptr();
+          let out = libc_memmove(p.add(d), p.add(s), bytes);
+          assert_eq!(p.add(d), out);
+        }
+        clone.copy_within(s..(s+bytes), d);
+        assert_eq!(clone, buffer, "\nd: {d:?},\ns: {s:?},\nbytes: {bytes}",
+          d = unsafe { buffer.as_ptr().add(d) },
+          s = unsafe { buffer.as_ptr().add(s) },
+        );
+      }
+    }
+  }
+  
   let mut lcg = Lcg::new();
-  for _ in 0 .. 1000 {
+  for _ in 0 .. 100 {
     for bytes in 0 .. 128 {
       let mut buffer = rand_bytes(256);
       let mut clone = buffer.clone();
