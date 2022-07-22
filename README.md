@@ -1,15 +1,11 @@
-# arm7tdmi_mem_fns
+# arm7tdmi_aeabi
 
-Memory operation functions for the ARM7TDMI.
+Implements runtime support functions according to ARM's [AEABI][aeabi].
+All functions are specialized to the ARM7TDMI CPU.
+They should work with any later CPU as well,
+but because of instruciton pipeline differences they might have less than optimal performance.
 
-They'll also *work* with any other ARM arch ARMv4T or later, but instruction ordering
-is intended for the 3-stage pipeline of the ARM7TDMI.
-On later ARM chips (with a longer pipeline) the loops will still be correct,
-but they'll be slower than the best possible speeds from code optimized for the
-longer pipelines.
-
-For a step by step explanation of the assembly,
-check out the [HackMD Article](https://hackmd.io/@Lokathor/HJXTfarj5).
+[aeabi]: https://github.com/ARM-software/abi-aa/blob/main/rtabi32/rtabi32.rst
 
 ## Use
 
@@ -39,4 +35,4 @@ Or, if you're running on an ARM device (eg: rpi with the 32-bit OS) then you can
 
 All the code here is released under CCO.
 
-OR (if you really want to use the standard Rust licenses) Apache-2.0 OR MIT can also be used.
+OR (if you really want to use the standard Rust project licenses) Apache-2.0 OR MIT can also be used.
