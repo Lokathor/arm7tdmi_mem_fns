@@ -7,6 +7,10 @@ but because of instruciton pipeline differences they might have less than optima
 
 [aeabi]: https://github.com/ARM-software/abi-aa/blob/main/rtabi32/rtabi32.rst
 
+These functions are intended to support Rust development on the GBA,
+but they're written in assembly so they should work with any language
+and any ARMv4T or later device.
+
 ## Use
 
 Unfortunately, crates can't specify what link section they want a *dependency's* code to use.
