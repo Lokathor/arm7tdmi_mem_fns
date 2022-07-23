@@ -261,7 +261,7 @@ aeabi_memset: @ r0(dest), r1(count), r2(byte)
     mov    r3, r2
     @ for 'sets' too small to fixup we just byte loop
     cmp    r1, #3
-    ble    .L_byte_loop
+    ble    .L_memset_byte_loop
     @ carry/sign test on the address, then do fixup
     lsls   r12, r0, #31
     submi  r1, r1, #1
@@ -270,7 +270,7 @@ aeabi_memset: @ r0(dest), r1(count), r2(byte)
     strhcs r2, [r0], #2
   .L_memset_check_for_block_work:
     cmp    r1, #32
-    bge    .L_block_work
+    bge    .L_memset_block_work
   .L_memset_post_block_work:
     @ set 4 words
     tst    r1, #0b10000
@@ -300,11 +300,12 @@ aeabi_memset: @ r0(dest), r1(count), r2(byte)
     bgt    1b
     pop    {r4-r9}
     bxeq   lr
-    b      .L_post_block_work
+    b      .L_memset_post_block_work
 
   .L_memset_byte_loop:
+  1:
     subs   r1, r1, #1
     strbcs r2, [r0], #1
-    bgt    .L_byte_loop
+    bgt    1b
     bx     lr
 .previous
