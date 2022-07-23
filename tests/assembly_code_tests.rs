@@ -7,6 +7,8 @@ extern "C" {
   fn libc_memset(d: *mut u8, byte: i32, count: usize) -> *mut u8;
   fn aeabi_uread4(addr: *const u8) -> i32;
   fn aeabi_uread8(addr: *const u8) -> i64;
+  fn aeabi_uwrite4(value: i32, address: *mut i32) -> i32;
+  fn aeabi_uwrite8(value: i64, address: *mut i64) -> i64;
 }
 
 fn rand_bytes(n: usize) -> Vec<u8> {
@@ -122,5 +124,31 @@ fn test_aeabi_uread8() {
     let expected = i64::from_ne_bytes(v[x..(x+8)].try_into().unwrap());
     let actual = unsafe { aeabi_uread8(v.as_ptr().add(x)) };
     assert_eq!(expected, actual);
+  }
+}
+
+#[test]
+fn test_aeabi_uwrite4() {
+  let mut buffer: Vec<u8> = (1..).take(16).collect();
+  let mut clone: Vec<u8> = buffer.clone();
+  for x in 0..8 {
+    let i: i32 = 0x8899AABB;
+    clone[x..(x+4)].copy(i.to_ne_bytes());
+    let out = unsafe { aeabi_uwrite4(i, buffer.as_ptr().add(x)) };
+    assert_eq!(out, i);
+    assert_eq!(buffer, clone);
+  }
+}
+
+#[test]
+fn test_aeabi_uwrite8() {
+  let mut buffer: Vec<u8> = (1..).take(32).collect();
+  let mut clone: Vec<u8> = buffer.clone();
+  for x in 0..8 {
+    let i: i64 = 0x8899AABB_CCDDEEFF;
+    clone[x..(x+8)].copy(i.to_ne_bytes());
+    let out = unsafe { aeabi_uwrite8(i, buffer.as_ptr().add(x)) };
+    assert_eq!(out, i);
+    assert_eq!(buffer, clone);
   }
 }
