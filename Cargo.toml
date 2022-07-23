@@ -1,5 +1,5 @@
 [package]
-name = "arm7tdmi_mem_fns"
+name = "arm7tdmi_aeabi"
 version = "0.1.1"
 edition = "2021"
 keywords = ["arm7tdmi", "armv4t", "thumbv4t"]
@@ -14,4 +14,3 @@ license = "CCO OR Apache-2.0 OR MIT"
 [dev-dependencies]
 getrandom = "0.2"
 bytemuck = "1"
-

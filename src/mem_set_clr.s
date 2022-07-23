@@ -24,6 +24,9 @@ libc_memset:
 
 aeabi_memclr8:
 aeabi_memclr4:
+    mov    r2, #0
+    mov    r3, #0
+    b      .L_check_for_block_work
 aeabi_memclr:
     mov    r2, #0
 aeabi_memset8:
@@ -34,9 +37,9 @@ aeabi_memset: @ r0(dest), r1(count), r2(byte)
     orr    r2, r2, r2, lsl #8
     orr    r2, r2, r2, lsl #16
     mov    r3, r2
-    @ sets too small to fixup we just byte loop
+    @ for "sets" too small to fixup we just byte loop
     cmp    r1, #3
-    blt    .L_byte_loop
+    ble    .L_byte_loop
     @ carry/sign test on the address, then do fixup
     lsls   r12, r0, #31
     submi  r1, r1, #1
