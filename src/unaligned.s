@@ -4,7 +4,7 @@
 .global aeabi_uread8
 .global aeabi_uwrite8
 
-.section ".text.aeabi.uread"
+.section ".text.aeabi.unaligned.read"
 aeabi_uread8:
     ldrb r1, [r0, #4]
     ldrb r2, [r0, #5]
