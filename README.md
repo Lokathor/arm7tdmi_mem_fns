@@ -60,6 +60,8 @@ extern "C" {
   Rust, the compiler will catch when you mix it up.
 * "memory clear" functions work like "memory set", but the value to set is
   implied to be 0, which allows a minor optimization for the aligned versions.
+* "unaligned read" functions return the value read.
+* "unaligned write" functions return the value written.
 
 Functions with a 4 or 8 on the end require that input pointers be aligned to
 that much. The `bytes` value does *not* need to be an even multiple of the
