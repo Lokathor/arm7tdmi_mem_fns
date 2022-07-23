@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-core::arch::global_asm!(include_str!("../src/memory.s"), options(raw));
+core::arch::global_asm!(include_str!("../src/the_code.s"), options(raw));
 
 extern "C" {
   /// Copies to `d` from `s`.
