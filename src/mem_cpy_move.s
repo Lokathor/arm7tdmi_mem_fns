@@ -12,18 +12,23 @@
 .global libc_memmove
 .global libc_memcpy
 
+.section ".text.libc.memcpy"
 libc_memcpy:
     push   {r0, lr}
     bl     aeabi_memcpy
     pop    {r0, lr}
     bx     lr
+.previous
 
+.section ".text.libc.memmove"
 libc_memmove:
     push   {r0, lr}
     bl     aeabi_memmove
     pop    {r0, lr}
     bx     lr
+.previous
 
+.section ".text.aeabi.copy.forward"
 aeabi_memmove8:
 aeabi_memmove4:
 aeabi_memmove2:
@@ -128,9 +133,9 @@ aeabi_memcpy1:
     strbge  r3, [r0], #1
     bgt     1b
     bx      lr
+.previous
 
-@@@ Reverse @@@
-
+.section ".text.aeabi.copy.reverse"
   .L_r_copy_gain_align:
     add     r0, r0, r2
     add     r1, r1, r2
@@ -219,3 +224,4 @@ aeabi_memcpy1:
     strbge  r3, [r0, #-1]!
     bgt     1b
     bx      lr
+.previous

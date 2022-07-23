@@ -11,7 +11,7 @@ extern "C" {
 }
 
 #[test]
-fn test_aeabi_memset() {
+fn test_libc_memset() {
   for count in 0 .. 99 {
     for d in 0..8 {
       if d >= count {

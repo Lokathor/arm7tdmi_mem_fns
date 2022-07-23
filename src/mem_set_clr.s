@@ -1,4 +1,14 @@
 
+.global libc_memset
+.global aeabi_memset
+.global aeabi_memset4
+.global aeabi_memset8
+.global aeabi_memclr
+.global aeabi_memclr4
+.global aeabi_memclr8
+
+.section ".text.libc.memset"
+
 libc_memset:
     mov    r3, r2
     mov    r2, r1
@@ -7,6 +17,10 @@ libc_memset:
     bl     aeabi_memset
     pop    {r0, lr}
     bx     lr
+
+.previous
+
+.section ".text.aeabi.memset"
 
 aeabi_memclr8:
 aeabi_memclr4:
@@ -66,3 +80,6 @@ aeabi_memset: @ r0(dest), r1(count), r2(byte)
     strbcs r2, [r0], #1
     bgt    .L_byte_loop
     bx     lr
+
+.previous
+
