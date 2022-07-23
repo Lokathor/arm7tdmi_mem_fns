@@ -1,16 +1,14 @@
 
-.global aeabi_memmove1
-.global aeabi_memcpy1
-.global aeabi_memmove2
-.global aeabi_memcpy2
-.global aeabi_memmove4
-.global aeabi_memcpy4
-.global aeabi_memmove8
-.global aeabi_memcpy8
-.global aeabi_memmove
-.global aeabi_memcpy
-.global libc_memmove
 .global libc_memcpy
+.global aeabi_memcpy
+.global aeabi_memcpy4
+.global aeabi_memcpy8
+.global gba_memcpy_sram
+
+.global libc_memmove
+.global aeabi_memmove
+.global aeabi_memmove4
+.global aeabi_memmove8
 
 libc_memcpy:
     push   {r0, lr}
@@ -26,8 +24,6 @@ libc_memmove:
 
 aeabi_memmove8:
 aeabi_memmove4:
-aeabi_memmove2:
-aeabi_memmove1:
 aeabi_memmove:
     cmp    r0, r1 @ if d > s, reverse copy
     bgt    .L_r_copy_gain_align
@@ -97,7 +93,6 @@ aeabi_memcpy4:
     strhcs r3, [r0], #2
     b      .L_f_copy_coalign4_assured
 
-aeabi_memcpy2:
   .L_f_copy_max_coalign2:
     tst     r0, #1
     bne     .L_f_copy_fixup2
@@ -120,7 +115,7 @@ aeabi_memcpy2:
     strb    r3, [r0], #1
     b       .L_f_copy_coalign2_assured
 
-aeabi_memcpy1:
+gba_memcpy_sram:
   .L_f_copy_max_coalign1:
   1:
     subs    r2, r2, #1
