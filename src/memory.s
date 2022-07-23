@@ -240,13 +240,15 @@ libc_memset:
     bx     lr
 .previous
 
-.section ".text.aeabi.memset"
+.section ".text.aeabi.memclr.aligned"
 aeabi_memclr8:
 aeabi_memclr4:
     mov    r2, #0
     mov    r3, #0
     b      .L_check_for_block_work
+.previous
 
+.section ".text.aeabi.memset"
 aeabi_memclr:
     mov    r2, #0
 aeabi_memset8:
@@ -266,10 +268,10 @@ aeabi_memset: @ r0(dest), r1(count), r2(byte)
     strbmi r2, [r0], #1
     subcs  r1, r1, #2
     strhcs r2, [r0], #2
-  .L_check_for_block_work:
+  .L_memset_check_for_block_work:
     cmp    r1, #32
     bge    .L_block_work
-  .L_post_block_work:
+  .L_memset_post_block_work:
     @ set 4 words
     tst    r1, #0b10000
     stmne  r0!, {r2, r3}
@@ -284,7 +286,7 @@ aeabi_memset: @ r0(dest), r1(count), r2(byte)
     strbmi r2, [r0], #1
     bx     lr
 
-  .L_block_work:
+  .L_memset_block_work:
     push   {r4-r9}
     mov    r4, r2
     mov    r5, r2
@@ -300,7 +302,7 @@ aeabi_memset: @ r0(dest), r1(count), r2(byte)
     bxeq   lr
     b      .L_post_block_work
 
-  .L_byte_loop:
+  .L_memset_byte_loop:
     subs   r1, r1, #1
     strbcs r2, [r0], #1
     bgt    .L_byte_loop
