@@ -40,6 +40,11 @@ extern "C" {
   fn aeabi_memclr(d: *mut u8, bytes: usize);
   fn aeabi_memclr4(d: *mut u8, bytes: usize);
   fn aeabi_memclr8(d: *mut u8, bytes: usize);
+  
+  fn aeabi_uread4(address: *mut i32) -> i32;
+  fn aeabi_uwrite4(value: i32, address: *mut i32) -> i32;
+  fn aeabi_uread8(address: *mut i32) -> i32;
+  fn aeabi_uwrite8(value: i64, address: *mut i64) -> i64;
 }
 ```
 
