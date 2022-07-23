@@ -114,3 +114,13 @@ fn test_aeabi_uread4() {
     assert_eq!(expected, actual);
   }
 }
+
+#[test]
+fn test_aeabi_uread8() {
+  let v: Vec<u8> = (1..).take(32).collect();
+  for x in 0..16 {
+    let expected = i64::from_ne_bytes(v[x..(x+8)].try_into().unwrap());
+    let actual = unsafe { aeabi_uread8(v.as_ptr().add(x)) };
+    assert_eq!(expected, actual);
+  }
+}
