@@ -8,7 +8,6 @@
 .global aeabi_memclr8
 
 .section ".text.libc.memset"
-
 libc_memset:
     mov    r3, r2
     mov    r2, r1
@@ -17,16 +16,15 @@ libc_memset:
     bl     aeabi_memset
     pop    {r0, lr}
     bx     lr
-
 .previous
 
 .section ".text.aeabi.memset"
-
 aeabi_memclr8:
 aeabi_memclr4:
     mov    r2, #0
     mov    r3, #0
     b      .L_check_for_block_work
+
 aeabi_memclr:
     mov    r2, #0
 aeabi_memset8:
@@ -37,7 +35,7 @@ aeabi_memset: @ r0(dest), r1(count), r2(byte)
     orr    r2, r2, r2, lsl #8
     orr    r2, r2, r2, lsl #16
     mov    r3, r2
-    @ for "sets" too small to fixup we just byte loop
+    @ for 'sets' too small to fixup we just byte loop
     cmp    r1, #3
     ble    .L_byte_loop
     @ carry/sign test on the address, then do fixup
@@ -63,6 +61,7 @@ aeabi_memset: @ r0(dest), r1(count), r2(byte)
     strhcs r2, [r0], #2
     strbmi r2, [r0], #1
     bx     lr
+
   .L_block_work:
     push   {r4-r9}
     mov    r4, r2
@@ -78,11 +77,10 @@ aeabi_memset: @ r0(dest), r1(count), r2(byte)
     pop    {r4-r9}
     bxeq   lr
     b      .L_post_block_work
+
   .L_byte_loop:
     subs   r1, r1, #1
     strbcs r2, [r0], #1
     bgt    .L_byte_loop
     bx     lr
-
 .previous
-

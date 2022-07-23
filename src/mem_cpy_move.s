@@ -26,16 +26,13 @@ libc_memmove:
     bx     lr
 .previous
 
-.section ".text.aeabi.copy.forward"
+.section ".text.aeabi.memcpy"
 aeabi_memmove8:
 aeabi_memmove4:
 aeabi_memmove:
     cmp    r0, r1 @ if d > s, reverse copy
     bgt    .L_r_copy_gain_align
     @ else fallthrough
-
-@@@ Forward @@@
-
 aeabi_memcpy:
   .L_f_copy_gain_align:
     eor    r3, r0, r1
@@ -43,7 +40,6 @@ aeabi_memcpy:
     bmi    .L_f_copy_max_coalign1
     bcs    .L_f_copy_max_coalign2
     @ else fallthrough
-
 aeabi_memcpy8:
 aeabi_memcpy4:
   .L_f_copy_max_coalign4:
@@ -76,6 +72,7 @@ aeabi_memcpy4:
     ldrbmi r3, [r1], #1
     strbmi r3, [r0], #1
     bx     lr
+
   .L_f_copy_block:
     push   {r4-r9}
   1:
@@ -86,6 +83,7 @@ aeabi_memcpy4:
     pop    {r4-r9}
     bxeq   lr
     b      .L_f_copy_post_block
+
   .L_f_copy_fixup4:
     cmp    r2, #7 @ if count <= (fix+word): just byte copy
     ble    .L_f_copy_max_coalign1
@@ -112,6 +110,7 @@ aeabi_memcpy4:
     ldrbne  r3, [r1], #1
     strbne  r3, [r0], #1
     bx      lr
+
   .L_f_copy_fixup2:
     cmp     r2, #3 @ if count <= (fix+halfword): just byte copy
     ble     .L_f_copy_max_coalign1
@@ -128,9 +127,7 @@ gba_memcpy_sram:
     strbge  r3, [r0], #1
     bgt     1b
     bx      lr
-.previous
 
-.section ".text.aeabi.copy.reverse"
   .L_r_copy_gain_align:
     add     r0, r0, r2
     add     r1, r1, r2
@@ -139,7 +136,6 @@ gba_memcpy_sram:
     bmi     .L_r_copy_max_coalign1
     bcs     .L_r_copy_max_coalign2
     @ else fallthrough
-
   .L_r_copy_max_coalign4:
     tst     r0, #3
     bne     .L_r_copy_fixup4
@@ -168,6 +164,7 @@ gba_memcpy_sram:
     ldrbmi  r3, [r1, #-1]!
     strbmi  r3, [r0, #-1]!
     bx      lr
+
   .L_r_copy_block:
     push   {r4-r9}
   1:
@@ -178,6 +175,7 @@ gba_memcpy_sram:
     pop     {r4-r9}
     bxeq    lr
     b       .L_r_copy_post_block
+
   .L_r_copy_fixup4:
     cmp     r2, #7 @ if count <= (fix+word): just byte copy
     ble     .L_r_copy_max_coalign1
@@ -204,6 +202,7 @@ gba_memcpy_sram:
     ldrbne  r3, [r1, #-1]!
     strbne  r3, [r0, #-1]!
     bx      lr
+
   .L_r_copy_fixup2:
     cmp     r2, #3 @ if count <= (fix+halfword): just byte copy
     ble     .L_r_copy_max_coalign1
