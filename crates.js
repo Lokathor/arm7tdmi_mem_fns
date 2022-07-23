@@ -1,1 +1,1 @@
-window.ALL_CRATES = ["arm7tdmi_mem_fns"];
+window.ALL_CRATES = ["arm7tdmi_aeabi"];

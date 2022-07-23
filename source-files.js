@@ -1,3 +1,3 @@
 var sourcesIndex = {};
-sourcesIndex["arm7tdmi_mem_fns"] = {"name":"","files":["lib.rs"]};
+sourcesIndex["arm7tdmi_aeabi"] = {"name":"","files":["lib.rs"]};
 createSourceSidebar();
