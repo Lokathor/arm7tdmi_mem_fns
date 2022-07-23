@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-core::arch::global_asm!(include_str!("../src/mem_cpy_move.s"), options(raw));
+core::arch::global_asm!(include_str!("../src/memory.s"), options(raw));
 
 extern "C" {
   /// Copies to `d` from `s`.
@@ -28,6 +28,10 @@ extern "C" {
   ///   alignment is available.
   /// **Returns:** the `d` pointer you passed as input.
   fn libc_memmove(d: *mut u8, s: *const u8, bytes: usize) -> *mut u8;
+  
+  fn libc_memset(d: *mut u8, byte: i32, count: usize) -> *mut u8;
+  fn aeabi_memset(d: *mut u8, count: usize, byte: i32);
+  fn aeabi_memclr(d: *mut u8, count: usize);
 }
 
 fn rand_bytes(n: usize) -> Vec<u8> {
@@ -62,76 +66,6 @@ impl Lcg {
   fn next_u32(&mut self) -> u32 {
     self.0 = self.0.wrapping_mul(747796405).wrapping_add(1);
     self.0
-  }
-}
-
-//#[test]
-fn test_aeabi_memmove1(){
-  let mut lcg = Lcg::new();
-  for _ in 0..10 {
-    for bytes in 0..99 {
-      let mut buffer = rand_bytes(256);
-      let mut clone = buffer.clone();
-      let d = (lcg.next_u32() % 128) as usize;
-      let s = (lcg.next_u32() % 128) as usize;
-      unsafe {
-        let p = buffer.as_mut_ptr();
-        aeabi_memmove1(p.add(d), p.add(s), bytes);
-      }
-      clone.copy_within(s..(s+bytes), d);
-      assert_eq!(clone, buffer, "\nd: {d},\ns: {s},\nbytes: {bytes}");
-    }
-  }
-}
-
-//#[test]
-fn test_aeabi_memmove2() {
-  let mut lcg = Lcg::new();
-  for _ in 0 .. 10 {
-    for bytes in 0..99 {
-      let mut buffer = rand_halfwords(256);
-      let mut clone = buffer.clone();
-      let d = (lcg.next_u32() % 128) as usize;
-      let s = (lcg.next_u32() % 128) as usize;
-      unsafe {
-        let p: *mut u16 = buffer.as_mut_ptr();
-        aeabi_memmove2(p.add(d), p.add(s), bytes);
-      }
-      bytemuck::cast_slice_mut::<u16, u8>(&mut clone).copy_within((s*2)..(s*2+bytes), d*2);
-      assert_eq!(clone, buffer, "\nd: {d},\ns: {s},\nbytes: {bytes}");
-    }
-  }
-}
-
-//#[test]
-fn test_aeabi_memmove4() {
-  {
-    let mut buffer = rand_words(10);
-    let mut clone = buffer.clone();
-    let d = 1;
-    let s = 0;
-    let bytes = 32;
-    unsafe {
-      let p: *mut u32 = buffer.as_mut_ptr();
-      aeabi_memmove4(p.add(d), p.add(s), bytes);
-    }
-    bytemuck::cast_slice_mut::<u32, u8>(&mut clone).copy_within((s*4)..(s*4+bytes),d*4);
-    assert_eq!(clone, buffer, "\nd: {d},\ns: {s},\nbytes: {bytes}");
-  }
-  let mut lcg = Lcg::new();
-  for _ in 0 .. 10 {
-    for bytes in 0 .. 128 {
-      let mut buffer = rand_words(256);
-      let mut clone = buffer.clone();
-      let d = (lcg.next_u32() % 128) as usize;
-      let s = (lcg.next_u32() % 128) as usize;
-      unsafe {
-        let p: *mut u32 = buffer.as_mut_ptr();
-        aeabi_memmove4(p.add(d), p.add(s), bytes);
-      }
-      bytemuck::cast_slice_mut::<u32, u8>(&mut clone).copy_within((s*4)..(s*4+bytes),d*4);
-      assert_eq!(clone, buffer, "\nd: {d},\ns: {s},\nbytes: {bytes}");
-    }
   }
 }
 
@@ -173,6 +107,25 @@ fn test_libc_memmove() {
       }
       clone.copy_within(s..(s+bytes),d);
       assert_eq!(clone, buffer, "\nd: {d},\ns: {s},\nbytes: {bytes}");
+    }
+  }
+}
+
+#[test]
+fn test_libc_memset() {
+  for count in 0 .. 99 {
+    for d in 0..8 {
+      if d >= count {
+        continue;
+      }
+      let byte = count as i32;
+      let mut v = vec![0_u8; count];
+      let out = unsafe { libc_memset(v.as_mut_ptr().add(d), byte, count-d) };
+      assert_eq!(unsafe { v.as_ptr().add(d) }, out);
+      assert!(v[d..].iter().all(|&b| (b as i32) == byte),
+        "\n=dest: {d:?},\n=count: {count},\n=byte: {byte},\nv: {v:?}\n",
+        d = v.as_ptr(),
+      );
     }
   }
 }
