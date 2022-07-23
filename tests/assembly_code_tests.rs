@@ -5,8 +5,8 @@ core::arch::global_asm!(include_str!("../src/the_code.s"), options(raw));
 extern "C" {
   fn libc_memmove(d: *mut u8, s: *const u8, bytes: usize) -> *mut u8;
   fn libc_memset(d: *mut u8, byte: i32, count: usize) -> *mut u8;
-  fn aeabi_uread4(addr: *mut u8) -> i32;
-  fn aeabi_uread8(addr: *mut u8) -> i64;
+  fn aeabi_uread4(addr: *const u8) -> i32;
+  fn aeabi_uread8(addr: *const u8) -> i64;
 }
 
 fn rand_bytes(n: usize) -> Vec<u8> {
