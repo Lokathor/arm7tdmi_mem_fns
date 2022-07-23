@@ -245,7 +245,7 @@ aeabi_memclr8:
 aeabi_memclr4:
     mov    r2, #0
     mov    r3, #0
-    b      .L_check_for_block_work
+    b      .L_memset_check_for_block_work
 .previous
 
 .section ".text.aeabi.memset"
