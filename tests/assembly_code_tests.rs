@@ -1,37 +1,14 @@
 #![allow(dead_code)]
 
-core::arch::global_asm!(include_str!("../src/memory.s"), options(raw));
+core::arch::global_asm!(include_str!("../src/the_code.s"), options(raw));
 
 extern "C" {
-  /// Copies to `d` from `s`.
-  /// * The two regions *may* overlap.
-  /// * The maximum co-alignment is assumed to be 1.
-  fn aeabi_memmove1(d: *mut u8, s: *const u8, bytes: usize);
-
-  /// Copies to `d` from `s`.
-  /// * The two regions *may* overlap.
-  /// * The two pointers **must** be aligned to 2.
-  /// * The maximum co-alignment is assumed to be 2.
-  fn aeabi_memmove2(d: *mut u16, s: *const u16, bytes: usize);
-
-  /// Copies to `d` from `s`.
-  /// * The two regions *may* overlap.
-  /// * The two pointers **must** be aligned to 4.
-  fn aeabi_memmove4(d: *mut u32, s: *const u32, bytes: usize);
-
-  /// Copies to `d` from `s`.
-  /// * The two regions *may* overlap.
-  /// * The pointers can be of any alignment.
-  ///   This function will check the alignment of both pointers,
-  ///   apply a fixup if possible,
-  ///   and then call over to `aeabi_memmoveN` for however much
-  ///   alignment is available.
-  /// **Returns:** the `d` pointer you passed as input.
   fn libc_memmove(d: *mut u8, s: *const u8, bytes: usize) -> *mut u8;
-  
   fn libc_memset(d: *mut u8, byte: i32, count: usize) -> *mut u8;
-  fn aeabi_memset(d: *mut u8, count: usize, byte: i32);
-  fn aeabi_memclr(d: *mut u8, count: usize);
+  fn aeabi_uread4(addr: *const u8) -> i32;
+  fn aeabi_uread8(addr: *const u8) -> i64;
+  fn aeabi_uwrite4(value: i32, address: *mut i32) -> i32;
+  fn aeabi_uwrite8(value: i64, address: *mut i64) -> i64;
 }
 
 fn rand_bytes(n: usize) -> Vec<u8> {
@@ -127,5 +104,51 @@ fn test_libc_memset() {
         d = v.as_ptr(),
       );
     }
+  }
+}
+
+#[test]
+fn test_aeabi_uread4() {
+  let v: Vec<u8> = (1..).take(16).collect();
+  for x in 0..8 {
+    let expected = i32::from_ne_bytes(v[x..(x+4)].try_into().unwrap());
+    let actual = unsafe { aeabi_uread4(v.as_ptr().add(x)) };
+    assert_eq!(expected, actual);
+  }
+}
+
+#[test]
+fn test_aeabi_uread8() {
+  let v: Vec<u8> = (1..).take(32).collect();
+  for x in 0..16 {
+    let expected = i64::from_ne_bytes(v[x..(x+8)].try_into().unwrap());
+    let actual = unsafe { aeabi_uread8(v.as_ptr().add(x)) };
+    assert_eq!(expected, actual);
+  }
+}
+
+#[test]
+fn test_aeabi_uwrite4() {
+  let mut buffer: Vec<u8> = (1..).take(16).collect();
+  let mut clone: Vec<u8> = buffer.clone();
+  for x in 0..8 {
+    let i: i32 = 0x7799AABB;
+    clone[x..(x+4)].copy_from_slice(&i.to_ne_bytes());
+    let out = unsafe { aeabi_uwrite4(i, buffer.as_mut_ptr().add(x).cast::<i32>()) };
+    assert_eq!(out, i);
+    assert_eq!(buffer, clone);
+  }
+}
+
+#[test]
+fn test_aeabi_uwrite8() {
+  let mut buffer: Vec<u8> = (1..).take(32).collect();
+  let mut clone: Vec<u8> = buffer.clone();
+  for x in 0..8 {
+    let i: i64 = 0x7799AABB_CCDDEEFF;
+    clone[x..(x+8)].copy_from_slice(&i.to_ne_bytes());
+    let out = unsafe { aeabi_uwrite8(i, buffer.as_mut_ptr().add(x).cast::<i64>()) };
+    assert_eq!(out, i);
+    assert_eq!(buffer, clone);
   }
 }

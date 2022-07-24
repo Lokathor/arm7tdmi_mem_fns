@@ -21,16 +21,16 @@ The following functions are currently provided:
 
 ```rust
 extern "C" {
-  fn libc_memcpy(d: *mut u8, s: *mut u8, bytes: usize) -> *mut u8;
-  fn aeabi_memcpy(d: *mut u8, s: *mut u8, bytes: usize);
-  fn aeabi_memcpy4(d: *mut u8, s: *mut u8, bytes: usize);
-  fn aeabi_memcpy8(d: *mut u8, s: *mut u8, bytes: usize);
-  fn gba_memcpy_sram(d: *mut u8, s: *mut u8, bytes: usize);
+  fn libc_memcpy(d: *mut u8, s: *const u8, bytes: usize) -> *mut u8;
+  fn aeabi_memcpy(d: *mut u8, s: *const u8, bytes: usize);
+  fn aeabi_memcpy4(d: *mut u8, s: *const u8, bytes: usize);
+  fn aeabi_memcpy8(d: *mut u8, s: *const u8, bytes: usize);
+  fn gba_memcpy_sram(d: *mut u8, s: *const u8, bytes: usize);
 
-  fn libc_memmove(d: *mut u8, s: *mut u8, bytes: usize) -> *mut u8;
-  fn aeabi_memmove(d: *mut u8, s: *mut u8, bytes: usize);
-  fn aeabi_memmove4(d: *mut u8, s: *mut u8, bytes: usize);
-  fn aeabi_memmove8(d: *mut u8, s: *mut u8, bytes: usize);
+  fn libc_memmove(d: *mut u8, s: *const u8, bytes: usize) -> *mut u8;
+  fn aeabi_memmove(d: *mut u8, s: *const u8, bytes: usize);
+  fn aeabi_memmove4(d: *mut u8, s: *const u8, bytes: usize);
+  fn aeabi_memmove8(d: *mut u8, s: *const u8, bytes: usize);
 
   fn libc_memset(d: *mut u8, val: i32, bytes: usize) -> *mut u8;
   fn aeabi_memset(d: *mut u8, bytes: usize, val: i32);
@@ -40,6 +40,11 @@ extern "C" {
   fn aeabi_memclr(d: *mut u8, bytes: usize);
   fn aeabi_memclr4(d: *mut u8, bytes: usize);
   fn aeabi_memclr8(d: *mut u8, bytes: usize);
+  
+  fn aeabi_uread4(address: *const i32) -> i32;
+  fn aeabi_uread8(address: *const i32) -> i32;
+  fn aeabi_uwrite4(value: i32, address: *mut i32) -> i32;
+  fn aeabi_uwrite8(value: i64, address: *mut i64) -> i64;
 }
 ```
 
@@ -55,6 +60,8 @@ extern "C" {
   Rust, the compiler will catch when you mix it up.
 * "memory clear" functions work like "memory set", but the value to set is
   implied to be 0, which allows a minor optimization for the aligned versions.
+* "unaligned read" functions return the value read.
+* "unaligned write" functions return the value written.
 
 Functions with a 4 or 8 on the end require that input pointers be aligned to
 that much. The `bytes` value does *not* need to be an even multiple of the
