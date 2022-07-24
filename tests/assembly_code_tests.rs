@@ -132,7 +132,7 @@ fn test_aeabi_uwrite4() {
   let mut buffer: Vec<u8> = (1..).take(16).collect();
   let mut clone: Vec<u8> = buffer.clone();
   for x in 0..8 {
-    let i: i32 = 0x8899AABB;
+    let i: i32 = 0x7799AABB;
     clone[x..(x+4)].copy_from_slice(&i.to_ne_bytes());
     let out = unsafe { aeabi_uwrite4(i, buffer.as_mut_ptr().add(x).cast::<i32>()) };
     assert_eq!(out, i);
@@ -145,7 +145,7 @@ fn test_aeabi_uwrite8() {
   let mut buffer: Vec<u8> = (1..).take(32).collect();
   let mut clone: Vec<u8> = buffer.clone();
   for x in 0..8 {
-    let i: i64 = 0x8899AABB_CCDDEEFF;
+    let i: i64 = 0x7799AABB_CCDDEEFF;
     clone[x..(x+8)].copy_from_slice(&i.to_ne_bytes());
     let out = unsafe { aeabi_uwrite8(i, buffer.as_mut_ptr().add(x).cast::<i64>()) };
     assert_eq!(out, i);
