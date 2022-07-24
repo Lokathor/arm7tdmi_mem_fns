@@ -134,7 +134,7 @@ fn test_aeabi_uwrite4() {
   for x in 0..8 {
     let i: i32 = 0x8899AABB;
     clone[x..(x+4)].copy_from_slice(&i.to_ne_bytes());
-    let out = unsafe { aeabi_uwrite4(i, buffer.as_mut_ptr().add(x)) };
+    let out = unsafe { aeabi_uwrite4(i, buffer.as_mut_ptr().add(x).cast::<i32>()) };
     assert_eq!(out, i);
     assert_eq!(buffer, clone);
   }
@@ -147,7 +147,7 @@ fn test_aeabi_uwrite8() {
   for x in 0..8 {
     let i: i64 = 0x8899AABB_CCDDEEFF;
     clone[x..(x+8)].copy_from_slice(&i.to_ne_bytes());
-    let out = unsafe { aeabi_uwrite8(i, buffer.as_mut_ptr().add(x)) };
+    let out = unsafe { aeabi_uwrite8(i, buffer.as_mut_ptr().add(x).cast::<i64>()) };
     assert_eq!(out, i);
     assert_eq!(buffer, clone);
   }
