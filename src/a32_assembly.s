@@ -19,11 +19,6 @@
 .global aeabi_memclr4
 .global aeabi_memclr8
 
-.global aeabi_uread4
-.global aeabi_uwrite4
-.global aeabi_uread8
-.global aeabi_uwrite8
-
 .global aeabi_idiv
 .global aeabi_uidiv
 .global aeabi_idivmod
