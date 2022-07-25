@@ -45,6 +45,13 @@ extern "C" {
   fn aeabi_uread8(address: *const i32) -> i32;
   fn aeabi_uwrite4(value: i32, address: *mut i32) -> i32;
   fn aeabi_uwrite8(value: i64, address: *mut i64) -> i64;
+
+  fn aeabi_idiv(n: i32, d: i32) -> i32;
+  fn aeabi_uidiv(n: u32, d: u32) -> u32;
+  /// fake return type to enforce the correct (quot, rem) return
+  fn aeabi_idivmod(n: i32, d: i32) -> u64;
+  /// fake return type to enforce the correct (quot, rem) return
+  fn aeabi_uidivmod(n: u32, d: u32) -> u64;
 }
 ```
 

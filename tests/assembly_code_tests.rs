@@ -9,6 +9,14 @@ extern "C" {
   fn aeabi_uread8(addr: *const u8) -> i64;
   fn aeabi_uwrite4(value: i32, address: *mut i32) -> i32;
   fn aeabi_uwrite8(value: i64, address: *mut i64) -> i64;
+  fn aeabi_idiv(numerator: i32, denominator: i32) -> i32;
+  fn aeabi_uidiv(numerator: u32, denominator: u32) -> u32;
+  /// Fake return type to force a two-register return.
+  /// Transmute the value to `[i32; 2]` to get `[quot, rem]`
+  fn aeabi_idivmod(numerator: i32, denominator: i32) -> u64;
+  /// Fake return type to force a two-register return.
+  /// Transmute the value to `[u32; 2]` to get `[quot, rem]`
+  fn aeabi_uidivmod(numerator: u32, denominator: u32) -> u64;
 }
 
 fn rand_bytes(n: usize) -> Vec<u8> {
@@ -150,5 +158,94 @@ fn test_aeabi_uwrite8() {
     let out = unsafe { aeabi_uwrite8(i, buffer.as_mut_ptr().add(x).cast::<i64>()) };
     assert_eq!(out, i);
     assert_eq!(buffer, clone);
+  }
+}
+
+#[test]
+fn test_aeabi_idiv() {
+  let mut lcg = Lcg::new();
+  {
+    let num = i32::MIN;
+    let denom = -1;
+    let expected = num.wrapping_div(denom);
+    let actual = unsafe { aeabi_idiv(num, denom) };
+    assert_eq!(expected, actual);
+  }
+  for _ in 0..100 {
+    let num = lcg.next_u32() as i32;
+    let denom = lcg.next_u32() as i32;
+    if denom == 0 {
+      continue;
+    }
+    let expected = num / denom;
+    let actual = unsafe { aeabi_idiv(num, denom) };
+    assert_eq!(expected, actual,
+      "\nnum: {num},\ndenom: {denom},\nexpected: {expected},\nactual: {actual}"
+    );
+  }
+}
+
+#[test]
+fn test_aeabi_uidiv() {
+  let mut lcg = Lcg::new();
+  for _ in 0..100 {
+    let num = lcg.next_u32();
+    let denom = lcg.next_u32();
+    if denom == 0 {
+      continue;
+    }
+    let expected = num / denom;
+    let actual = unsafe { aeabi_uidiv(num, denom) };
+    assert_eq!(expected, actual,
+      "\nnum: {num},\ndenom: {denom},\nexpected: {expected},\nactual: {actual}"
+    );
+  }
+}
+
+
+#[test]
+fn test_aeabi_idivmod() {
+  let mut lcg = Lcg::new();
+  {
+    let num = i32::MIN;
+    let denom = -1;
+    let expected = [num.wrapping_div(denom), num.wrapping_rem(denom)];
+    let actual: [i32; 2] = unsafe {
+      core::mem::transmute::<u64, [i32; 2]>(aeabi_idivmod(num, denom))
+    };
+    assert_eq!(expected, actual);
+  }
+  for _ in 0 .. 100 {
+    let num = lcg.next_u32() as i32;
+    let denom = lcg.next_u32() as i32;
+    if denom == 0 {
+      continue;
+    }
+    let expected = [num / denom, num % denom];
+    let actual: [i32; 2] = unsafe {
+      core::mem::transmute::<u64, [i32; 2]>(aeabi_idivmod(num, denom))
+    };
+    assert_eq!(expected, actual,
+      "\nnum: {num},\ndenom: {denom},\nexpected: {expected:?},\nactual: {actual:?}"
+    );
+  }
+}
+
+#[test]
+fn test_aeabi_uidivmod() {
+  let mut lcg = Lcg::new();
+  for _ in 0 .. 100 {
+    let num = lcg.next_u32();
+    let denom = lcg.next_u32();
+    if denom == 0 {
+      continue;
+    }
+    let expected = [num / denom, num % denom];
+    let actual: [u32; 2] = unsafe {
+      core::mem::transmute::<u64, [u32;2]>(aeabi_uidivmod(num, denom))
+    };
+    assert_eq!(expected, actual,
+      "\nnum: {num},\ndenom: {denom},\nexpected: {expected:?},\nactual: {actual:?}"
+    );
   }
 }

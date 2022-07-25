@@ -24,6 +24,12 @@
 .global aeabi_uread8
 .global aeabi_uwrite8
 
+.global aeabi_idiv
+.global aeabi_uidiv
+.global aeabi_idivmod
+.global aeabi_uidivmod
+.global aeabi_idiv0
+
 .section ".text.libc.memcpy"
 libc_memcpy:
     push   {r0, lr}
@@ -370,4 +376,94 @@ aeabi_uwrite4:
     lsr  r2, r2, #8
     strb r2, [r1, #3]
     bx   lr
+.previous
+
+.section ".text.aeabi.idiv"
+aeabi_idiv:
+    cmp   r1, #0
+    beq   aeabi_idiv0
+    push  {r4, lr}
+    eor   r4, r1, r0
+    cmp   r0, #0
+    rsblt r0, r0, #0
+    cmp   r1, #0
+    rsclt r1, r1, #0
+    bl    aeabi_uidiv
+    cmp   r4, #0
+    rsblt r0, r0, #0
+    pop   {r4, lr}
+    bx    lr
+.previous
+
+.section ".text.aeabi.uidiv"
+aeabi_uidiv:
+    cmp   r1, #0
+    beq   aeabi_idiv0
+    mov   r3, r1
+    cmp   r3, r0, lsr #1
+    2:
+    lslls r3, r3, #1
+    cmp   r3, r0, lsr #1
+    bls   2b
+    mov   r2, #0
+    3:
+    cmp   r0, r3
+    subhs r0, r0, r3
+    adc   r2, r2, r2
+    mov   r3, r3, lsr #1
+    cmp   r3, r1
+    bhs   3b
+    mov   r0, r2
+    bx    lr
+.previous
+
+.section ".text.aeabi.idivmod"
+aeabi_idivmod:
+    cmp   r1, #0
+    beq   aeabi_idiv0
+    @ we need to store: num, denom, whatever, lr
+    push  {r4, r5, r6, lr}
+    @ num = abs(num), denom = abs(denom), but store the true values
+    movs  r4, r0
+    rsblt r0, r0, #0
+    movs  r5, r1
+    rsblt r1, r1, #0
+    bl    aeabi_uidivmod
+    @ if num_sign != denom_sign: quot is negative
+    eors  r12, r4, r5
+    rsblt r0, r0, #0
+    @ if num is neg: rem is negative
+    cmp   r4, #0
+    rsblt r1, r1, #0
+    pop   {r4, r5, r6, lr}
+    bx    lr
+.previous
+
+.section ".text.aeabi.uidivmod"
+aeabi_uidivmod:
+    cmp   r1, #0
+    beq   aeabi_idiv0
+    mov   r2, r0 @ num
+    mov   r3, r1 @ denom
+    mov   r0, #0 @ quot
+    mov   r1, #0 @ rem
+    mov   r12, #32 @ bit counter
+    b     2f
+  1:
+    lsls  r2, r2, #1
+    adc   r1, r1, r1
+    cmp   r1, r3
+    subhs r1, r1, r3
+    adc   r0, r0, r0
+  2:
+    subs  r12, r12, #1
+    bpl   1b
+    bx    lr
+.previous
+
+.section ".text.aeabi.idiv0"
+aeabi_idiv0:
+    mov r1, r0
+    mov r0, #0
+    bx  lr
 .previous

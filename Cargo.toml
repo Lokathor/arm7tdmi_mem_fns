@@ -1,6 +1,6 @@
 [package]
 name = "arm7tdmi_aeabi"
-version = "0.1.1"
+version = "0.1.3"
 edition = "2021"
 keywords = ["arm7tdmi", "armv4t", "thumbv4t"]
 categories = ["embedded", "no-std"]
