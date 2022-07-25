@@ -1,6 +1,14 @@
 #![allow(dead_code)]
 
-core::arch::global_asm!(include_str!("../src/the_code.s"), options(raw));
+#[cfg(not(feature="thumb"))]
+core::arch::global_asm!(include_str!("../src/assembly_a32.s"), options(raw));
+#[cfg(not(feature="thumb"))]
+core::arch::global_asm!(concat!(".code 16\n",include_str!("../src/assembly_t32.s"),"\n.code 32"),options(raw));
+
+#[cfg(feature="thumb")]
+core::arch::global_asm!(concat!(".code 32\n",include_str!("../src/assembly_a32.s"),"\n.code 16"), options(raw));
+#[cfg(feature="thumb")]
+core::arch::global_asm!(include_str!("../src/assembly_a32.s"), options(raw));
 
 extern "C" {
   fn libc_memmove(d: *mut u8, s: *const u8, bytes: usize) -> *mut u8;
