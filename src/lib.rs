@@ -11,11 +11,33 @@ use proc_macro::{Ident, Literal, TokenStream, TokenTree};
 #[allow(dead_code)]
 mod fn_declarations;
 
+const THE_CODE_BASE: &'static str = include_str!("the_code.s");
+const FN_DECLARATIONS_BASE: &'static str = include_str!("fn_declarations.rs");
+
 #[proc_macro]
 pub fn generate_fns(token_stream: TokenStream) -> TokenStream {
   let mapping = parse_mapping(token_stream);
 
-  "fn answer() -> u32 { 42 }".parse().unwrap()
+  let the_code = THE_CODE_BASE;
+  let fn_declarations = FN_DECLARATIONS_BASE;
+
+  let out_string = format!(
+    r#"
+    #[cfg(not(target_feature="thumb"))]
+    ::core::arch::global_asm!("{the_code}", options(raw));
+
+    #[cfg(target_feature="thumb")]
+    ::core::arch::global_asm!(
+      ".code 32",
+      "{the_code}",
+      ".code 16",
+      options(raw)
+    );
+
+    {fn_declarations}
+    "#
+  );
+  out_string.parse().unwrap()
 }
 
 fn parse_mapping(token_stream: TokenStream) -> HashMap<String, Literal> {
