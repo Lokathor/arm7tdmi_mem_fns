@@ -388,7 +388,7 @@ aeabi_idiv:
     rsblt r0, r0, #0
     cmp   r1, #0
     rsclt r1, r1, #0
-    bl    aeabi_uidiv
+    bl    .L_aeabi_uidiv_skip_zero_check
     cmp   r4, #0
     rsblt r0, r0, #0
     pop   {r4, lr}
@@ -399,21 +399,22 @@ aeabi_idiv:
 aeabi_uidiv:
     cmp   r1, #0
     beq   aeabi_idiv0
+  .L_aeabi_uidiv_skip_zero_check:
     mov   r3, r1
     cmp   r3, r0, lsr #1
-    2:
+  2: @ left shift loop to line up m-s-bit of num and denom
     lslls r3, r3, #1
     cmp   r3, r0, lsr #1
     bls   2b
     mov   r2, #0
-    3:
+  3: @ subtraction loop
     cmp   r0, r3
     subhs r0, r0, r3
     adc   r2, r2, r2
     mov   r3, r3, lsr #1
     cmp   r3, r1
     bhs   3b
-    mov   r0, r2
+    mov   r0, r2 @ todo: can we re-alloc our registers to avoid this?
     bx    lr
 .previous
 
@@ -421,43 +422,31 @@ aeabi_uidiv:
 aeabi_idivmod:
     cmp   r1, #0
     beq   aeabi_idiv0
-    @ we need to store: num, denom, whatever, lr
-    push  {r4, r5, r6, lr}
-    @ num = abs(num), denom = abs(denom), but store the true values
-    movs  r4, r0
+    push  {r4, r5, lr} @ temporarily mis-aligned stack!
+    movs  r4, r0     @ store real num
+    rsblt r0, r0, #0 @ num = abs(num)
+    movs  r5, r1     @ store real denom
+    rsblt r1, r1, #0 @ denom = abs(denom)
+    bl    .L_aeabi_uidivmod_skip_zero_check
+    eors  r12, r4, r5 @ num_sign != denom_sign: quot is negative
     rsblt r0, r0, #0
-    movs  r5, r1
+    cmp   r4, #0 @ num < 0: rem is neg
     rsblt r1, r1, #0
-    bl    aeabi_uidivmod
-    @ if num_sign != denom_sign: quot is negative
-    eors  r12, r4, r5
-    rsblt r0, r0, #0
-    @ if num is neg: rem is negative
-    cmp   r4, #0
-    rsblt r1, r1, #0
-    pop   {r4, r5, r6, lr}
+    pop   {r4, r5, lr}
     bx    lr
 .previous
 
 .section ".text.aeabi.uidivmod"
-aeabi_uidivmod:
+aeabi_uidivmod: @ r0=num, r1=denom
     cmp   r1, #0
     beq   aeabi_idiv0
-    mov   r2, r0 @ num
-    mov   r3, r1 @ denom
-    mov   r0, #0 @ quot
-    mov   r1, #0 @ rem
-    mov   r12, #32 @ bit counter
-    b     2f
-  1:
-    lsls  r2, r2, #1
-    adc   r1, r1, r1
-    cmp   r1, r3
-    subhs r1, r1, r3
-    adc   r0, r0, r0
-  2:
-    subs  r12, r12, #1
-    bpl   1b
+  .L_aeabi_uidivmod_skip_zero_check:
+    mov   r12, r0 @ r12=num
+    push  {r1, lr} @ ASSUMES UIDIV DOES NOT USE REGISTER 12!
+    bl    .L_aeabi_uidiv_skip_zero_check @ r0=quot
+    pop   {r1, lr}
+    mul   r2, r0, r1 @ r2=quot*denom
+    sub   r1, r12, r2 @ r1=num-(quot*denom)
     bx    lr
 .previous
 
