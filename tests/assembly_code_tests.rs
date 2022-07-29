@@ -187,6 +187,12 @@ fn test_aeabi_idiv() {
 #[test]
 fn test_aeabi_uidiv() {
   let mut lcg = Lcg::new();
+  for denom in [u32::MAX, u32::MAX-1, u32::MAX-2]{
+    let num = u32::MAX;
+    let expected = num / denom;
+    let actual = unsafe { aeabi_uidiv(num, denom) };
+    assert_eq!(expected, actual);
+  }
   for _ in 0..100 {
     let num = lcg.next_u32();
     let denom = lcg.next_u32();
