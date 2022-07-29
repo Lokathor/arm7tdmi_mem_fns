@@ -7,6 +7,6 @@ use proc_macro::TokenStream;
 mod fn_declarations;
 
 #[proc_macro]
-pub fn make_answer(_item: TokenStream) -> TokenStream {
+pub fn generate_fns(_item: TokenStream) -> TokenStream {
     "fn answer() -> u32 { 42 }".parse().unwrap()
 }
