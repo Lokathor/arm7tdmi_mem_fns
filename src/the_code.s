@@ -451,7 +451,7 @@ aeabi_uidivmod: @ r0=num, r1=denom
     bx    lr
 .previous
 
-.section ".text.aeabi.div0"
+.section ".text.aeabi.idiv0"
 aeabi_idiv0:
     mov r1, r0
     mov r0, #0
