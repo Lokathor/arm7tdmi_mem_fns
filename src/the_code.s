@@ -396,25 +396,25 @@ aeabi_idiv:
 .previous
 
 .section ".text.aeabi.uidiv"
-aeabi_uidiv:
+aeabi_uidiv: @ r0=num, r1=denom
     cmp   r1, #0
     beq   aeabi_idiv0
   .L_aeabi_uidiv_skip_zero_check:
-    mov   r3, r1
+    mov   r3, r1         @ r3(shifted_denom) = denom
     cmp   r3, r0, lsr #1
   2: @ left shift loop to line up m-s-bit of num and denom
-    lslls r3, r3, #1
+    lslls r3, r3, #1     @ if shifted_denom < (num>>1): shifted_denom =<< 1;
     cmp   r3, r0, lsr #1
     bls   2b
-    mov   r2, #0
+    mov   r2, #0         @ r0=num, r1=denom, r2=quot(init 0), r3=shifted_denom
   3: @ subtraction loop
     cmp   r0, r3
-    subhs r0, r0, r3
-    adc   r2, r2, r2
-    mov   r3, r3, lsr #1
+    subcs r0, r0, r3     @ if no_underflow(num-shifted_denom): num -= shifted_denom;
+    adc   r2, r2, r2     @ quot = 2*quot + no_underflow(num-shifted_denom)
+    mov   r3, r3, lsr #1 @ shifted_denom >>= 1;
     cmp   r3, r1
-    bhs   3b
-    mov   r0, r2 @ todo: can we re-alloc our registers to avoid this?
+    bcs   3b             @ if no_underflow(shifted_denom - denom): continue
+    mov   r0, r2
     bx    lr
 .previous
 
@@ -423,14 +423,14 @@ aeabi_idivmod:
     cmp   r1, #0
     beq   aeabi_idiv0
     push  {r4, r5, lr} @ temporarily mis-aligned stack!
-    movs  r4, r0     @ store real num
-    rsblt r0, r0, #0 @ num = abs(num)
-    movs  r5, r1     @ store real denom
-    rsblt r1, r1, #0 @ denom = abs(denom)
+    movs  r4, r0       @ store real num
+    rsblt r0, r0, #0   @ num = abs(num)
+    movs  r5, r1       @ store real denom
+    rsblt r1, r1, #0   @ denom = abs(denom)
     bl    .L_aeabi_uidivmod_skip_zero_check
-    eors  r12, r4, r5 @ num_sign != denom_sign: quot is negative
+    eors  r12, r4, r5  @ num_sign != denom_sign: quot is negative
     rsblt r0, r0, #0
-    cmp   r4, #0 @ num < 0: rem is neg
+    cmp   r4, #0       @ num < 0: rem is neg
     rsblt r1, r1, #0
     pop   {r4, r5, lr}
     bx    lr
