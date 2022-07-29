@@ -29,6 +29,7 @@
 .global aeabi_idivmod
 .global aeabi_uidivmod
 .global aeabi_idiv0
+.global aeabi_ldiv0
 
 .section ".text.libc.memcpy"
 libc_memcpy:
@@ -450,9 +451,10 @@ aeabi_uidivmod: @ r0=num, r1=denom
     bx    lr
 .previous
 
-.section ".text.aeabi.idiv0"
-aeabi_idiv0:
+.section ".text.aeabi.div0"
+aeabi_ldiv0:
     mov r1, r0
+aeabi_idiv0:
     mov r0, #0
     bx  lr
 .previous
