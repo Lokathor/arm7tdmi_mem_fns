@@ -164,9 +164,8 @@ fn test_aeabi_uwrite8() {
 #[test]
 fn test_aeabi_idiv() {
   let mut lcg = Lcg::new();
-  {
+  for denom in [-1, -2, -3, -4, -5] {
     let num = i32::MIN;
-    let denom = -1;
     let expected = num.wrapping_div(denom);
     let actual = unsafe { aeabi_idiv(num, denom) };
     assert_eq!(expected, actual);
