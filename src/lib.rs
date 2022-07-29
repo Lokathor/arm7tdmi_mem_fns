@@ -24,12 +24,12 @@ pub fn generate_fns(token_stream: TokenStream) -> TokenStream {
   let out_string = format!(
     r#"
     #[cfg(not(target_feature="thumb"))]
-    ::core::arch::global_asm!("{the_code}", options(raw));
+    ::core::arch::global_asm!({the_code:?}, options(raw));
 
     #[cfg(target_feature="thumb")]
     ::core::arch::global_asm!(
       ".code 32",
-      "{the_code}",
+      {the_code:?},
       ".code 16",
       options(raw)
     );
